@@ -14,8 +14,77 @@ datasource db {
 }
 
 model User {
-  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email     String @unique 
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String   @unique
   name      String
   password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  letters Letter[]
+}
+
+model Letter {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String
+  content      String       @db.Text
+  deliveryDate DateTime
+  status       LetterStatus @default(PENDING)
+  reminders    Int          @default(1)
+  tags         String[]     @default([])
+  hasImage     Boolean      @default(false)
+  hasVoice     Boolean      @default(false)
+  imageUrl     String?
+  voiceUrl     String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  emailDeliveries EmailDelivery[]
+
+  @@index([userId])
+  @@index([deliveryDate])
+  @@index([status])
+}
+
+model EmailDelivery {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  letterId       String            @db.Uuid
+  recipientEmail String
+  subject        String
+  emailContent   String            @db.Text
+  deliveryType   EmailDeliveryType
+  attemptNumber  Int               @default(1)
+  status         EmailStatus       @default(PENDING)
+  sentAt         DateTime?
+  errorMessage   String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  letter Letter @relation(fields: [letterId], references: [id], onDelete: Cascade)
+
+  @@index([letterId])
+  @@index([status])
+  @@index([deliveryType])
+  @@index([sentAt])
+}
+
+enum LetterStatus {
+  PENDING
+  DELIVERED
+  CANCELLED
+}
+
+enum EmailDeliveryType {
+  INITIAL_DELIVERY
+  REMINDER
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+  RETRYING
 }

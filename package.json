@@ -9,7 +9,8 @@
     "dev": "concurrently \"npm run watch\" \"npm run server\"",
     "build": "tsc",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && tsc"
+    "vercel-build": "prisma generate && tsc",
+    "test:email": "npm run build && node dist/test/emailTest.js"
   },
   "repository": {
     "type": "git",
@@ -29,12 +30,21 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.17",
+    "bcryptjs": "^3.0.2",
     "concurrently": "^9.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.5",
     "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "ts-node": "^10.9.2"
   }
 }
